@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import prisma from "@/prisma/prismaClient";
 
-// POST request to create a new permission
+
 export async function POST(req) {
   try {
-    const { name } = await req.json(); // Get permission name from request body
+    const { name } = await req.json();
 
     if (!name) {
       return NextResponse.json(
@@ -13,7 +13,7 @@ export async function POST(req) {
       );
     }
 
-    // Check if permission already exists
+    
     const existingPermission = await prisma.permission.findUnique({
       where: { name },
     });
@@ -25,7 +25,7 @@ export async function POST(req) {
       );
     }
 
-    // Create new permission
+    
     const permission = await prisma.permission.create({
       data: { name },
     });
@@ -40,13 +40,13 @@ export async function POST(req) {
   }
 }
 
-// GET request to fetch all permissions
+
 export async function GET(req) {
   try {
-    // Fetch all permissions from the database
+   
     const permissions = await prisma.permission.findMany();
 
-    // Return the list of permissions
+   
     return NextResponse.json({ permissions }, { status: 200 });
   } catch (error) {
     console.error("Error fetching permissions:", error);
