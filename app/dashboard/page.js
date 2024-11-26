@@ -226,7 +226,7 @@ export default function Dashboard() {
                   <thead>
                     <tr>
                       <th className="px-4 py-2">User</th>
-                      <th className="px-4 py-2">Current Role</th>
+                      <th className="px-4 py-2 sm:table-cell hidden">Current Role</th>
                       <th className="px-4 py-2">Change Role</th>
                     </tr>
                   </thead>
@@ -243,7 +243,7 @@ export default function Dashboard() {
                             </div>
                           </td>
 
-                          <td className="px-4 py-2">{user.role?.name}</td>
+                          <td className="px-4 py-2 sm:table-cell hidden">{user.role?.name}</td>
                           <td className="px-4 py-2">
                             <select
                               value={user.role?.id || ""}
