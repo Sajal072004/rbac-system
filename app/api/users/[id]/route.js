@@ -19,12 +19,12 @@ export async function GET(req, { params }) {
       );
     }
 
-    // Return the user's role as part of the response
-    return NextResponse.json({ role: user.role }, { status: 200 });
+    // Return the entire user data, including the role
+    return NextResponse.json(user, { status: 200 });
   } catch (error) {
-    console.error("Error fetching user role:", error);
+    console.error("Error fetching user:", error);
     return NextResponse.json(
-      { error: "Failed to fetch user role." },
+      { error: "Failed to fetch user data." },
       { status: 500 }
     );
   }

@@ -1,24 +1,7 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/prisma/prismaClient';
-import bcrypt from 'bcryptjs'
-
-export async function GET() {
-  try {
-    const users = await prisma.user.findMany();
-
-    
-    return NextResponse.json(users);
-  } catch (error) {
-    console.error('Error fetching users:', error);
-
-    
-    return NextResponse.json(
-      { error: 'Failed to fetch users' },
-      { status: 500 }
-    );
-  }
-}
-
+import { NextResponse } from "next/server";
+import prisma from "@/prisma/prismaClient";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export async function POST(req) {
   try {
@@ -61,7 +44,27 @@ export async function POST(req) {
       },
     });
 
-    return NextResponse.json(newUser, { status: 201 });
+    // Create a JWT token after successful registration
+    const token = jwt.sign(
+      { userId: newUser.id, roleId: newUser.roleId },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    // Return the token and user data
+    return NextResponse.json(
+      {
+        message: "Registration successful!",
+        token,
+        user: {
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          roleId: newUser.roleId,
+        },
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating user:", error);
 

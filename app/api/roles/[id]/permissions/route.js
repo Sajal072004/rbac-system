@@ -1,6 +1,36 @@
 import { NextResponse } from "next/server";
 import prisma from "@/prisma/prismaClient";
 
+export async function GET(req, { params }) {
+  try {
+    const { id } = params; // Role ID from the URL
+
+    // Fetch role by ID
+    const role = await prisma.role.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        permissions: true, // Include permissions for the role
+      },
+    });
+
+    if (!role) {
+      return NextResponse.json(
+        { error: `Role with ID ${id} not found.` },
+        { status: 404 }
+      );
+    }
+
+    // Return the role's permissions
+    return NextResponse.json({ permissions: role.permissions }, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching role permissions:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch role permissions." },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req, { params }) {
   try {
     const { id } = params; // Role ID from the URL
