@@ -13,6 +13,10 @@ export default function Home() {
     router.push("/signup");
   };
 
+  const handleKnowMoreClick = () => {
+    router.push("/knowmore");
+  }
+
   return (
     <div
       className="relative min-h-screen bg-cover bg-center bg-no-repeat text-white"
@@ -69,7 +73,7 @@ export default function Home() {
             </button>
             <button
               className="bg-gray-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full hover:bg-gray-500 transition-all shadow-lg"
-              onClick={handleSignupClick}
+              onClick={handleKnowMoreClick}
             >
               Know More
             </button>
