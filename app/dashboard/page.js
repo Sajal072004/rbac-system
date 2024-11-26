@@ -61,7 +61,7 @@ export default function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userId");
-    router.push("/login");
+    router.push("/");
   };
 
   const updateCurrentRole = async() => {
