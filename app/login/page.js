@@ -24,7 +24,7 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store the auth token (JWT or similar) in localStorage or cookie
+        
         localStorage.setItem("authToken", data.token);
         localStorage.setItem('userId', data.user.id);
         router.push("/dashboard");
