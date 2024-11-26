@@ -64,60 +64,56 @@ export default function Dashboard() {
     router.push("/");
   };
 
-  const updateCurrentRole = async() => {
+  const updateCurrentRole = async () => {
+    const fetchUserData = async () => {
+      const userId = localStorage.getItem("userId");
 
-  
+      if (userId) {
+        try {
+          const response = await fetch(`/api/users/${userId}`);
+          const data = await response.json();
+          setCurrentUser(data || null);
 
-  const fetchUserData = async () => {
-    const userId = localStorage.getItem("userId");
+          if (data?.role?.id) {
+            const roleResponse = await fetch(
+              `/api/roles/${data.role.id}/permissions`
+            );
+            const roleData = await roleResponse.json();
+            setRolePermissions(roleData.permissions || []);
+          }
 
-    if (userId) {
-      try {
-        const response = await fetch(`/api/users/${userId}`);
-        const data = await response.json();
-        setCurrentUser(data || null);
-
-        if (data?.role?.id) {
-          const roleResponse = await fetch(
-            `/api/roles/${data.role.id}/permissions`
-          );
-          const roleData = await roleResponse.json();
-          setRolePermissions(roleData.permissions || []);
+          if (data?.role?.name === "Admin") {
+            fetchAdminData();
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
         }
-
-        if (data?.role?.name === "Admin") {
-          fetchAdminData();
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
       }
-    }
+    };
+
+    const fetchAdminData = async () => {
+      try {
+        const usersResponse = await fetch("/api/users");
+        const usersData = await usersResponse.json();
+
+        const filteredUsers = usersData.filter(
+          (user) => user.id !== currentUser?.id
+        );
+        setUsers(filteredUsers || []);
+
+        const rolesResponse = await fetch("/api/roles");
+        const rolesData = await rolesResponse.json();
+        setRoles(rolesData || []);
+      } catch (error) {
+        console.error("Error fetching admin data:", error);
+      }
+    };
+    fetchUserData();
   };
-
-  const fetchAdminData = async () => {
-    try {
-      const usersResponse = await fetch("/api/users");
-      const usersData = await usersResponse.json();
-
-      const filteredUsers = usersData.filter(
-        (user) => user.id !== currentUser?.id
-      );
-      setUsers(filteredUsers || []);
-
-      const rolesResponse = await fetch("/api/roles");
-      const rolesData = await rolesResponse.json();
-      setRoles(rolesData || []);
-    } catch (error) {
-      console.error("Error fetching admin data:", error);
-    }
-  };
-  fetchUserData();
-}
-
 
   const handleRoleChange = async (userId, newRoleId) => {
     if (!newRoleId) return;
-  
+
     try {
       const response = await fetch(`/api/users/${userId}`, {
         method: "PATCH",
@@ -126,11 +122,10 @@ export default function Dashboard() {
         },
         body: JSON.stringify({ roleId: newRoleId }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
-        
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
             user.id === userId
@@ -138,8 +133,7 @@ export default function Dashboard() {
               : user
           )
         );
-  
-        
+
         if (userId === currentUser.id) {
           setCurrentUser((prevUser) => ({
             ...prevUser,
@@ -148,8 +142,6 @@ export default function Dashboard() {
         }
 
         updateCurrentRole();
-       
-  
       } else {
         console.error("Error updating role:", data.error);
       }
@@ -157,8 +149,6 @@ export default function Dashboard() {
       console.error("Error making PATCH request:", error);
     }
   };
-  
-  
 
   return (
     <div
@@ -226,7 +216,9 @@ export default function Dashboard() {
                   <thead>
                     <tr>
                       <th className="px-4 py-2">User</th>
-                      <th className="px-4 py-2 sm:table-cell hidden">Current Role</th>
+                      <th className="px-4 py-2 hidden sm:table-cell">
+                        Current Role
+                      </th>
                       <th className="px-4 py-2">Change Role</th>
                     </tr>
                   </thead>
@@ -235,15 +227,18 @@ export default function Dashboard() {
                       users.map((user) => (
                         <tr key={user.id} className="border-b border-gray-600">
                           <td className="px-4 py-2">
-                            <div className="flex flex-col g-2">
-                              {" "}
-                              
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
                               <p>{user.name}</p>
-                              <p>{user.email}</p>
+                              {/* Hide email on small screens */}
+                              <p className="hidden sm:block">{user.email}</p>
                             </div>
                           </td>
 
-                          <td className="px-4 py-2 sm:table-cell hidden">{user.role?.name}</td>
+                          {/* Hide "Current Role" column on small screens */}
+                          <td className="px-4 py-2 hidden sm:table-cell">
+                            {user.role?.name}
+                          </td>
+
                           <td className="px-4 py-2">
                             <select
                               value={user.role?.id || ""}
@@ -253,7 +248,7 @@ export default function Dashboard() {
                                   parseInt(e.target.value)
                                 )
                               }
-                              className="bg-gray-800 text-white px-4 py-2 rounded"
+                              className="bg-gray-800 text-white px-4 py-2 rounded w-full sm:w-auto"
                             >
                               <option value="" disabled>
                                 Select Role
