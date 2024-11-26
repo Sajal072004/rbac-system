@@ -6,9 +6,10 @@ This is a Next.js application developed for an assignment at **VRV Security**. T
 
 The project is deployed and can be accessed at the following URL:
 
-[**Deployed Application**]([https://your-deployed-url.com](https://rbac-system-plum.vercel.app/))
+[**Deployed Application**](https://rbac-system-plum.vercel.app/)
 
 You can visit the link to see the live version of the application.
+
 
 
 #Frontend
