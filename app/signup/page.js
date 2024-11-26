@@ -8,9 +8,9 @@ import Button from "../components/Button";
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState(""); // New state for name
+  const [name, setName] = useState(""); 
   const [error, setError] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false); // State to track if user wants to sign up as an admin
+  const [isAdmin, setIsAdmin] = useState(false); 
   const router = useRouter();
 
   const handleSignup = async () => {
@@ -19,13 +19,13 @@ export default function Signup() {
         email,
         password,
         name,
-        // Conditionally include roleId if the user is signing up as an admin
+        
         ...(isAdmin && { roleId: 1 }),
       };
 
       const response = await fetch("/api/auth/register", {
         method: "POST",
-        body: JSON.stringify(requestBody), // Send the request body including roleId if admin
+        body: JSON.stringify(requestBody), 
         headers: {
           "Content-Type": "application/json",
         },
@@ -34,7 +34,7 @@ export default function Signup() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store the auth token (JWT or similar) in localStorage or cookie
+        
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("userId", data.user.id);
         router.push("/dashboard");
