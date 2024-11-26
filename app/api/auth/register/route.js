@@ -15,7 +15,7 @@ export async function POST(req) {
       );
     }
 
-    // Check if the user already exists
+    
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -27,31 +27,31 @@ export async function POST(req) {
       );
     }
 
-    // Hash the password using bcrypt
-    const saltRounds = 10; // Higher value means more security but slower hashing
+    
+    const saltRounds = 10; 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Assign default roleId = 2 if not provided
+    
     const newRoleId = roleId || 2;
 
-    // Create the new user with the hashed password
+    
     const newUser = await prisma.user.create({
       data: {
         name,
         email,
-        password: hashedPassword, // Store the hashed password
+        password: hashedPassword, 
         roleId: newRoleId,
       },
     });
 
-    // Create a JWT token after successful registration
+    
     const token = jwt.sign(
       { userId: newUser.id, roleId: newUser.roleId },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    // Return the token and user data
+    
     return NextResponse.json(
       {
         message: "Registration successful!",
