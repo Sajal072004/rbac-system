@@ -67,3 +67,38 @@ export async function PATCH(req, { params }) {
     );
   }
 }
+
+
+export async function DELETE(req, { params }) {
+  try {
+    const userId = parseInt(params.id); // Extract user ID from params
+
+    // Check if the user exists
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: `User with ID ${userId} not found.` },
+        { status: 404 }
+      );
+    }
+
+    // Delete the user
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+
+    return NextResponse.json(
+      { message: `User with ID ${userId} has been deleted successfully.` },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete user.' },
+      { status: 500 }
+    );
+  }
+}

@@ -8,7 +8,7 @@ export default function Dashboard() {
   const [currentUser, setCurrentUser] = useState(null);
   const [rolePermissions, setRolePermissions] = useState([]);
   const [users, setUsers] = useState([]);
-  const [roles, setRoles] = useState([]);
+ 
   const router = useRouter();
 
   useEffect(() => {
@@ -36,127 +36,48 @@ export default function Dashboard() {
             const roleData = await roleResponse.json();
             setRolePermissions(roleData.permissions || []);
           }
-
-          if (data?.role?.name === "Admin") {
-            fetchAdminData();
-          }
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
       }
     };
 
-    const fetchAdminData = async () => {
+    const fetchUsersAndRoles = async () => {
       try {
         const usersResponse = await fetch("/api/users");
+       
         const usersData = await usersResponse.json();
-
-        const filteredUsers = usersData.filter(
-          (user) => user.id !== currentUser?.id
-        );
-        setUsers(filteredUsers || []);
-
-        const rolesResponse = await fetch("/api/roles");
-        const rolesData = await rolesResponse.json();
-        setRoles(rolesData || []);
+        setUsers(usersData || []);
+        
       } catch (error) {
-        console.error("Error fetching admin data:", error);
+        console.error("Error fetching users or roles:", error);
       }
     };
 
     fetchUserData();
-  }, [currentUser?.id]);
+    fetchUsersAndRoles();
+  }, []);
+
+  const handleDeleteUser = async (userId) => {
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+      } else {
+        console.error("Error deleting user");
+      }
+    } catch (error) {
+      console.error("Error making DELETE request:", error);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userId");
     router.push("/");
-  };
-
-  const updateCurrentRole = async () => {
-    const fetchUserData = async () => {
-      const userId = localStorage.getItem("userId");
-
-      if (userId) {
-        try {
-          const response = await fetch(`/api/users/${userId}`);
-          const data = await response.json();
-          setCurrentUser(data || null);
-
-          if (data?.role?.id) {
-            const roleResponse = await fetch(
-              `/api/roles/${data.role.id}/permissions`
-            );
-            const roleData = await roleResponse.json();
-            setRolePermissions(roleData.permissions || []);
-          }
-
-          if (data?.role?.name === "Admin") {
-            fetchAdminData();
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      }
-    };
-
-    const fetchAdminData = async () => {
-      try {
-        const usersResponse = await fetch("/api/users");
-        const usersData = await usersResponse.json();
-
-        const filteredUsers = usersData.filter(
-          (user) => user.id !== currentUser?.id
-        );
-        setUsers(filteredUsers || []);
-
-        const rolesResponse = await fetch("/api/roles");
-        const rolesData = await rolesResponse.json();
-        setRoles(rolesData || []);
-      } catch (error) {
-        console.error("Error fetching admin data:", error);
-      }
-    };
-    fetchUserData();
-  };
-
-  const handleRoleChange = async (userId, newRoleId) => {
-    if (!newRoleId) return;
-
-    try {
-      const response = await fetch(`/api/users/${userId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ roleId: newRoleId }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user.id === userId
-              ? { ...user, role: { ...user.role, id: newRoleId } }
-              : user
-          )
-        );
-
-        if (userId === currentUser.id) {
-          setCurrentUser((prevUser) => ({
-            ...prevUser,
-            role: { ...prevUser.role, id: newRoleId },
-          }));
-        }
-
-        updateCurrentRole();
-      } else {
-        console.error("Error updating role:", data.error);
-      }
-    } catch (error) {
-      console.error("Error making PATCH request:", error);
-    }
   };
 
   return (
@@ -200,9 +121,7 @@ export default function Dashboard() {
 
             <div className="bg-gray-800 p-6 rounded-lg shadow-lg bg-opacity-50 text-center">
               <h2 className="text-xl font-semibold mb-6">User Permissions</h2>
-              {currentUser?.role?.name === "Admin" ? (
-                <p>As an admin, you have all the permissions.</p>
-              ) : rolePermissions.length > 0 ? (
+              {currentUser?.role?.name !== "Admin" && rolePermissions.length > 0 ? (
                 <ul>
                   {rolePermissions.map((permission, index) => (
                     <li key={index} className="mb-2">
@@ -211,8 +130,11 @@ export default function Dashboard() {
                   ))}
                 </ul>
               ) : (
-                <p>No permissions available</p>
+             <p></p>
               )}
+              {
+                currentUser?.role?.name === "Admin" && ( <p>As an admin you have all the permissions</p>)
+              }
             </div>
           </div>
 
@@ -220,19 +142,17 @@ export default function Dashboard() {
             <div className="mt-8">
               <h2 className="text-2xl font-semibold mb-4">Admin Controls</h2>
               <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <Link href={"/dashboard/user-control"}>
+                <Link href={"/dashboard"}>
                   <h3 className="text-xl font-semibold mb-6 underline">
-                    Manage Users
+                    Manage Roles
                   </h3>
                 </Link>
+
                 <table className="min-w-full bg-gray-700 rounded-lg">
                   <thead>
                     <tr>
                       <th className="px-4 py-2">User</th>
-                      <th className="px-4 py-2 hidden sm:table-cell">
-                        Current Role
-                      </th>
-                      <th className="px-4 py-2">Change Role</th>
+                      <th className="px-4 py-2">Delete User</th>
                     </tr>
                   </thead>
                   <tbody className="text-center">
@@ -240,45 +160,26 @@ export default function Dashboard() {
                       users.map((user) => (
                         <tr key={user.id} className="border-b border-gray-600">
                           <td className="px-4 py-2">
-                          <div className="flex flex-col items-center">
+                            <div className="flex flex-col items-center">
                               <p>{user.name}</p>
                               <p className="text-sm text-gray-300">
                                 {user.email}
                               </p>
                             </div>
                           </td>
-
-                          {/* Hide "Current Role" column on small screens */}
-                          <td className="px-4 py-2 hidden sm:table-cell">
-                            {user.role?.name}
-                          </td>
-
                           <td className="px-4 py-2">
-                            <select
-                              value={user.role?.id || ""}
-                              onChange={(e) =>
-                                handleRoleChange(
-                                  user.id,
-                                  parseInt(e.target.value)
-                                )
-                              }
-                              className="bg-gray-800 text-white px-4 py-2 rounded w-full sm:w-auto"
+                            <button
+                              onClick={() => handleDeleteUser(user.id)}
+                              className="bg-red-600 text-white px-4 py-2 rounded shadow-lg hover:bg-red-500 transition-all"
                             >
-                              <option value="" disabled>
-                                Select Role
-                              </option>
-                              {roles.map((role) => (
-                                <option key={role.id} value={role.id}>
-                                  {role.name}
-                                </option>
-                              ))}
-                            </select>
+                              Delete
+                            </button>
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="3" className="px-4 py-2 text-center">
+                        <td colSpan="2" className="px-4 py-2 text-center">
                           No users found
                         </td>
                       </tr>
