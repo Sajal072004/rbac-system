@@ -8,17 +8,18 @@ export default function Dashboard() {
   const [currentUser, setCurrentUser] = useState(null);
   const [rolePermissions, setRolePermissions] = useState([]);
   const [users, setUsers] = useState([]);
- 
   const router = useRouter();
 
+  // Effect to check authentication and fetch the current user
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
 
     if (!authToken) {
       router.push("/");
     }
-  }, []);
+  }, [router]);
 
+  // Effect to fetch current user data
   useEffect(() => {
     const fetchUserData = async () => {
       const userId = localStorage.getItem("userId");
@@ -42,21 +43,29 @@ export default function Dashboard() {
       }
     };
 
+    fetchUserData();
+  }, []); // Only run once when the component mounts
+
+  // Effect to fetch users data, excluding the current user
+  useEffect(() => {
     const fetchUsersAndRoles = async () => {
-      try {
-        const usersResponse = await fetch("/api/users");
-       
-        const usersData = await usersResponse.json();
-        setUsers(usersData || []);
-        
-      } catch (error) {
-        console.error("Error fetching users or roles:", error);
+      if (currentUser) {
+        try {
+          const usersResponse = await fetch("/api/users");
+          const usersData = await usersResponse.json();
+
+          const filteredUsers = usersData.filter(
+            (user) => user.id !== currentUser.id // Exclude the current user
+          );
+          setUsers(filteredUsers || []);
+        } catch (error) {
+          console.error("Error fetching users or roles:", error);
+        }
       }
     };
 
-    fetchUserData();
     fetchUsersAndRoles();
-  }, []);
+  }, [currentUser]); // This runs every time `currentUser` changes
 
   const handleDeleteUser = async (userId) => {
     try {
@@ -130,11 +139,11 @@ export default function Dashboard() {
                   ))}
                 </ul>
               ) : (
-             <p></p>
+                <p></p>
               )}
-              {
-                currentUser?.role?.name === "Admin" && ( <p>As an admin you have all the permissions</p>)
-              }
+              {currentUser?.role?.name === "Admin" && (
+                <p>As an admin you have all the permissions</p>
+              )}
             </div>
           </div>
 
