@@ -4,12 +4,10 @@ import { NextResponse } from 'next/server';
 
 export async function GET(req, { params }) {
   try {
-    const { id } = params; // Extract user ID from the URL parameter
-
-    // Fetch the user and include the related role in the response
+    const { id } = params;
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(id) }, // Fetch user by ID
-      include: { role: true }, // Include the role data in the response
+      where: { id: parseInt(id) }, 
+      include: { role: true }, 
     });
 
     if (!user) {
@@ -19,7 +17,7 @@ export async function GET(req, { params }) {
       );
     }
 
-    // Return the entire user data, including the role
+    
     return NextResponse.json(user, { status: 200 });
   } catch (error) {
     console.error("Error fetching user:", error);
@@ -42,7 +40,7 @@ export async function PATCH(req, { params }) {
       );
     }
 
-    // Check if user exists
+    
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -54,7 +52,7 @@ export async function PATCH(req, { params }) {
       );
     }
 
-    // Update user role
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { roleId },
