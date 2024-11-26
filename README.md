@@ -2,27 +2,14 @@
 
 This is a Next.js application developed for an assignment at **VRV Security**. The project consists of both a frontend and backend that work together to provide a secure and responsive web application.
 
-## Getting Started
+## Deployment
 
-To get started with the project, follow the steps below:
+The project is deployed and can be accessed at the following URL:
 
-### 1. Run the Development Server
+[**Deployed Application**]([https://your-deployed-url.com](https://rbac-system-plum.vercel.app/))
 
-First, clone this repository and navigate into the project directory. Then, run the development server:
+You can visit the link to see the live version of the application.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open your browser and go to http://localhost:3000 to view the app.
-
-The page will automatically update as you make changes to the files.
 
 #Frontend
 The frontend is built using Next.js, providing a modern and responsive user interface. Key features of the frontend include:
