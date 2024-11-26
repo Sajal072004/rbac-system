@@ -130,7 +130,7 @@ export default function Dashboard() {
       const data = await response.json();
   
       if (response.ok) {
-        // Directly update the role for the user in the UI
+        
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
             user.id === userId
@@ -139,7 +139,7 @@ export default function Dashboard() {
           )
         );
   
-        // If the logged-in user's role was changed, update the currentUser state as well
+        
         if (userId === currentUser.id) {
           setCurrentUser((prevUser) => ({
             ...prevUser,
@@ -237,7 +237,7 @@ export default function Dashboard() {
                           <td className="px-4 py-2">
                             <div className="flex flex-col g-2">
                               {" "}
-                              {/* Apply flex-col to stack elements vertically */}
+                              
                               <p>{user.name}</p>
                               <p>{user.email}</p>
                             </div>
