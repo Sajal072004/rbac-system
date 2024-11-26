@@ -10,6 +10,9 @@ The project is deployed and can be accessed at the following URL:
 
 You can visit the link to see the live version of the application.
 
+[**Video Demo**]((https://youtu.be/IWG3U4UnJjs))
+
+
 
 
 #Frontend
