@@ -1,9 +1,7 @@
-// app/api/page.js
 
-// Handle GET request
 export async function GET(req) {
   try {
-    // Return a test message for GET request
+
     return new Response(
       JSON.stringify({ message: 'GET request to /api is working' }),
       { status: 200 }
@@ -17,10 +15,9 @@ export async function GET(req) {
   }
 }
 
-// Handle POST request
 export async function POST(req) {
   try {
-    // Return a test message for POST request
+    
     return new Response(
       JSON.stringify({ message: 'POST request to /api is working' }),
       { status: 200 }
