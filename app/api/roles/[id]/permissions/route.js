@@ -3,13 +3,11 @@ import prisma from "@/prisma/prismaClient";
 
 export async function GET(req, { params }) {
   try {
-    const { id } = params; // Role ID from the URL
-
-    // Fetch role by ID
+    const { id } = params; 
     const role = await prisma.role.findUnique({
       where: { id: parseInt(id) },
       include: {
-        permissions: true, // Include permissions for the role
+        permissions: true, 
       },
     });
 
@@ -20,7 +18,7 @@ export async function GET(req, { params }) {
       );
     }
 
-    // Return the role's permissions
+   
     return NextResponse.json({ permissions: role.permissions }, { status: 200 });
   } catch (error) {
     console.error("Error fetching role permissions:", error);
@@ -33,8 +31,8 @@ export async function GET(req, { params }) {
 
 export async function POST(req, { params }) {
   try {
-    const { id } = params; // Role ID from the URL
-    const { permissions } = await req.json(); // Array of permission names to assign
+    const { id } = params; 
+    const { permissions } = await req.json(); 
 
     if (!permissions || permissions.length === 0) {
       return NextResponse.json(
@@ -43,7 +41,7 @@ export async function POST(req, { params }) {
       );
     }
 
-    // Fetch role by ID
+    
     const role = await prisma.role.findUnique({
       where: { id: parseInt(id) },
     });
@@ -55,7 +53,7 @@ export async function POST(req, { params }) {
       );
     }
 
-    // Fetch permission records by name
+    
     const permissionRecords = await prisma.permission.findMany({
       where: {
         name: { in: permissions },
@@ -69,7 +67,7 @@ export async function POST(req, { params }) {
       );
     }
 
-    // Assign permissions to the role
+    
     await prisma.role.update({
       where: { id: role.id },
       data: {
