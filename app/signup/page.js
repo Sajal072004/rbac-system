@@ -10,13 +10,22 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState(""); // New state for name
   const [error, setError] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false); // State to track if user wants to sign up as an admin
   const router = useRouter();
 
   const handleSignup = async () => {
     try {
+      const requestBody = {
+        email,
+        password,
+        name,
+        // Conditionally include roleId if the user is signing up as an admin
+        ...(isAdmin && { roleId: 1 }),
+      };
+
       const response = await fetch("/api/auth/register", {
         method: "POST",
-        body: JSON.stringify({ email, password, name }), // Send name in request body
+        body: JSON.stringify(requestBody), // Send the request body including roleId if admin
         headers: {
           "Content-Type": "application/json",
         },
@@ -27,7 +36,7 @@ export default function Signup() {
       if (response.ok) {
         // Store the auth token (JWT or similar) in localStorage or cookie
         localStorage.setItem("authToken", data.token);
-        localStorage.setItem('userId', data.user.id);
+        localStorage.setItem("userId", data.user.id);
         router.push("/dashboard");
       } else {
         setError(data.error || "Signup failed. Please try again.");
@@ -87,6 +96,21 @@ export default function Signup() {
               placeholder="Password"
               className="mb-4 text-black"
             />
+
+            {/* Admin Signup Checkbox */}
+            <div className="mb-4 flex items-center">
+              <input
+                type="checkbox"
+                id="admin"
+                checked={isAdmin}
+                onChange={(e) => setIsAdmin(e.target.checked)}
+                className="mr-2"
+              />
+              <label htmlFor="admin" className="text-white">
+                Sign up as Admin
+              </label>
+            </div>
+
             <Button onClick={handleSignup} className="w-full">
               Sign Up
             </Button>
