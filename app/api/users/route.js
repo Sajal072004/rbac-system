@@ -1,12 +1,12 @@
 import prisma from '@/prisma/prismaClient';
 import { NextResponse } from 'next/server';
 
-// Fetch all users
+
 export async function GET() {
   try {
     const users = await prisma.user.findMany({
       include: {
-        role: true, // Include role details in the response
+        role: true, 
       },
     });
 
@@ -20,7 +20,6 @@ export async function GET() {
   }
 }
 
-// Register a new user
 export async function POST(req) {
   try {
     const { name, email, password, roleId } = await req.json();
@@ -32,7 +31,7 @@ export async function POST(req) {
       );
     }
 
-    // Check if user already exists
+    
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -49,7 +48,7 @@ export async function POST(req) {
       data: {
         name,
         email,
-        password, // Ensure the password is hashed before saving
+        password, 
         roleId,
       },
     });
@@ -64,7 +63,7 @@ export async function POST(req) {
   }
 }
 
-// Update user details (e.g., name or email)
+
 export async function PATCH(req, { params }) {
   try {
     const userId = parseInt(params.id);
@@ -82,13 +81,13 @@ export async function PATCH(req, { params }) {
       );
     }
 
-    // Prepare update data
+   
     const updateData = {};
     if (name) updateData.name = name;
     if (email) updateData.email = email;
     if (roleId) updateData.roleId = roleId;
 
-    // Update user
+    
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: updateData,
