@@ -48,24 +48,74 @@ JWT_SECRET="secret_key"
 
 DATABASE_URL: This is the connection string used to connect to the PostgreSQL database.
 JWT_SECRET: This secret key is used for signing and verifying JSON Web Tokens (JWT) for secure authentication.
-About the Project
+
+
+## About the Project
+
 This project is focused on providing a secure web application with the following features:
 
-User Authentication: Secure login and registration system using JWT tokens.
+- **User Authentication**: A secure login and registration system using JWT tokens.
+- **Role-Based Access Control**: Different user roles (e.g., Admin, User) with distinct permissions.
+- **Dynamic User Interface**: The frontend adapts based on the user's role, offering an intuitive user experience.
 
-Role-Based Access Control: Different user roles (e.g., Admin, User) with distinct permissions.
+### Detailed Working
 
-Dynamic User Interface: The frontend adapts based on the user's role, offering an intuitive user experience.
-Future Enhancements
+#### **Authentication System**
+
+The authentication system is built using **JWT (JSON Web Tokens)** for secure user login and registration. Here is how the authentication flow works:
+
+1. **Signup Process**:
+   - During the registration, users can choose their role. For demo purposes, users can sign up as an **Admin** or a **User**.
+   - The password entered by the user is **hashed** using a secure hashing algorithm (such as bcrypt) before being stored in the database.
+   - The hashed password ensures that even if the database is compromised, user passwords remain secure.
+
+2. **Login Process**:
+   - After signing up, users can log in using their credentials (email and password).
+   - When a user logs in, the system compares the entered password with the hashed password stored in the database.
+   - If the credentials are valid, the system generates a **JWT token** and returns it to the user.
+   - This JWT token is then stored on the client-side (typically in the browser's localStorage or cookies), and it is used for authenticating the user on subsequent requests.
+
+#### **Role-Based Access Control (RBAC)**
+
+Role-based access control is implemented to differentiate between users with different permissions:
+
+- **Admin**: Admin users have the highest level of control over the application. They can view and manage other users, including changing their roles.
+- **User**: Regular users have limited access, typically only to their own data and actions.
+
+When a user logs in, the backend checks their assigned role and returns relevant data based on their permissions. For example:
+
+- Regular users can only see their own data.
+- Admin users can access a special **admin dashboard** that displays all users and allows them to modify user roles.
+
+#### **Admin Controls**
+
+If the logged-in user is an **Admin**, they are given access to a special section of the application where they can perform the following actions:
+
+- **View All Users**: Admins can view a list of all registered users in the system.
+- **Change User Roles**: Admins can modify the roles of other users. For example, they can upgrade a user to an Admin role or demote an Admin to a regular user.
+
+The admin interface includes a list of users, each with a dropdown menu to change their role. The user list and roles are dynamically fetched from the backend and displayed in the UI.
+
+### Summary
+
+- **JWT Authentication**: Ensures secure login and registration with hashed passwords and JWT tokens.
+- **Role Selection During Signup**: Users can choose to sign up as an Admin or a regular User.
+- **Admin Controls**: Admin users can view and modify the roles of other users.
+
+---
+
+## Future Enhancements
+
+- **Additional Roles**: Introduce more roles with specific permissions to allow finer-grained access control.
+- **Password Reset**: Implement a password reset functionality for users who forget their password.
+- **User Profile Management**: Allow users to update their profile information, such as their name, email, and password.
+- **Audit Logs**: Introduce logging of user actions, especially for Admin users, to track any changes made to user roles or data.
+
+---
 
 
-Learn More
-To learn more about Next.js, you can check the following resources:
 
-Next.js Documentation - Learn about Next.js features and API.
-Learn Next.js - An interactive Next.js tutorial.
-Next.js GitHub Repository - Your feedback and contributions are welcome!
-Deploy on Vercel
+
 You can easily deploy this app on Vercel, the platform created by the creators of Next.js:
 
 Deploy on Vercel
